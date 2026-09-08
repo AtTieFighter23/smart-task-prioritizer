@@ -1,0 +1,15 @@
+# Python / Flask (server/)
+__pycache__/
+*.pyc
+instance/
+*.db
+.env
+
+# Node / React (client/)
+node_modules/
+dist/
+.vite/
+
+# Editor / OS
+.vscode/
+.DS_Store
