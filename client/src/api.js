@@ -1,0 +1,39 @@
+const BASE_URL = 'http://localhost:5555';
+
+async function request(path, options = {}) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+
+  if (res.status === 204) {
+    if (!res.ok) throw new Error('Request failed.');
+    return null;
+  }
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    const message = data?.error || `Request failed with status ${res.status}`;
+    throw new Error(message);
+  }
+
+  return data;
+}
+
+export const api = {
+  getProjects: () => request('/projects'),
+  createProject: (payload) =>
+    request('/projects', { method: 'POST', body: JSON.stringify(payload) }),
+  getProject: (id) => request(`/projects/${id}`),
+  deleteProject: (id) => request(`/projects/${id}`, { method: 'DELETE' }),
+
+  createTask: (payload) =>
+    request('/tasks', { method: 'POST', body: JSON.stringify(payload) }),
+  updateTask: (id, payload) =>
+    request(`/tasks/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  deleteTask: (id) => request(`/tasks/${id}`, { method: 'DELETE' }),
+
+  prioritize: (projectId) =>
+    request(`/projects/${projectId}/prioritize`, { method: 'POST' }),
+};
