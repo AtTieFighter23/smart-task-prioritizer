@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
 :root {
   --color-bg: #101820;
@@ -32,27 +32,29 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.6;
 }
 
 button {
   font-family: var(--font-display);
   font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 input,
 textarea,
 select {
   font-family: var(--font-body);
+  font-size: 16px;
   background: var(--color-bg);
   color: var(--color-text);
   border: 1px solid var(--color-border);
-  border-radius: 4px;
-  padding: 8px 10px;
+  border-radius: 6px;
+  padding: 10px 14px;
 }
 
 input:focus,
@@ -70,12 +72,12 @@ a {
 
 .muted-text {
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .error-text {
   color: var(--priority-high);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* --- App shell --- */
@@ -88,7 +90,7 @@ a {
 
 .navbar {
   border-bottom: 1px solid var(--color-border);
-  padding: 14px 24px;
+  padding: 18px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -97,15 +99,15 @@ a {
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .logout-button {
   background: transparent;
   border: 1px solid var(--color-border);
   color: var(--color-text-muted);
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 8px 16px;
+  font-size: 14px;
 }
 
 .logout-button:hover {
@@ -115,7 +117,7 @@ a {
 
 .navbar-title {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 700;
 }
 
@@ -128,19 +130,19 @@ a {
 /* --- Sidebar --- */
 
 .sidebar {
-  width: 260px;
+  width: 290px;
   flex-shrink: 0;
   border-right: 1px solid var(--color-border);
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   overflow-y: auto;
 }
 
 .sidebar-heading {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-text-muted);
   margin: 0;
@@ -149,13 +151,13 @@ a {
 .project-nav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .project-nav-link {
-  padding: 8px 10px;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 11px 14px;
+  border-radius: 6px;
+  font-size: 16px;
 }
 
 .project-nav-link:hover {
@@ -168,19 +170,33 @@ a {
   font-weight: 600;
 }
 
+.load-more-button {
+  background: transparent;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  padding: 9px;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.load-more-button:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
 .new-project-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 18px;
   border-top: 1px solid var(--color-border);
 }
 
 .new-project-form button {
   background: var(--color-surface);
   color: var(--color-text);
-  padding: 8px;
+  padding: 10px;
   border: 1px solid var(--color-border);
 }
 
@@ -192,17 +208,17 @@ a {
 
 .app-main {
   flex: 1;
-  padding: 32px;
+  padding: 36px;
   overflow-y: auto;
 }
 
 .empty-state {
-  max-width: 360px;
+  max-width: 400px;
 }
 
 .empty-state h1 {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 24px;
 }
 
 /* --- Auth screen --- */
@@ -215,26 +231,26 @@ a {
 }
 
 .auth-form {
-  width: 320px;
+  width: 360px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 32px;
+  gap: 14px;
+  padding: 40px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--color-surface);
 }
 
 .auth-title {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 24px;
   margin: 0;
 }
 
 .auth-form button[type='submit'] {
   background: var(--color-accent);
   color: var(--color-accent-text);
-  padding: 10px;
+  padding: 12px;
   margin-top: 4px;
 }
 
@@ -251,7 +267,7 @@ a {
   background: transparent;
   border: none;
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: 14px;
   font-family: var(--font-body);
   font-weight: 400;
   padding: 4px 0;
@@ -268,12 +284,12 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .project-title {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 28px;
   margin: 0;
 }
 
@@ -281,8 +297,8 @@ a {
   background: transparent;
   border: 1px solid var(--priority-high);
   color: var(--priority-high);
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 8px 16px;
+  font-size: 14px;
 }
 
 .delete-project-button:hover {
@@ -293,14 +309,14 @@ a {
 /* --- Prioritize action --- */
 
 .prioritize-section {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .prioritize-button {
   background: var(--color-accent);
   color: var(--color-accent-text);
-  padding: 10px 18px;
-  font-size: 14px;
+  padding: 12px 22px;
+  font-size: 15px;
 }
 
 .prioritize-button:hover:not(:disabled) {
@@ -316,20 +332,20 @@ a {
 
 .task-form {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
 .task-form input[type='text'] {
   flex: 1;
-  min-width: 180px;
+  min-width: 200px;
 }
 
 .task-form button {
   background: var(--color-accent);
   color: var(--color-accent-text);
-  padding: 8px 14px;
+  padding: 10px 18px;
 }
 
 .task-form button:hover {
@@ -340,16 +356,20 @@ a {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .task-row {
-  border-bottom: 1px solid var(--color-border);
-  padding: 12px 12px 12px 16px;
-  border-left: 3px solid transparent;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 5px solid transparent;
+  border-radius: 12px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .task-row.priority-high {
@@ -373,32 +393,34 @@ a {
 
 .task-title {
   font-weight: 600;
+  font-size: 18px;
 }
 
 .task-due {
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: 14px;
   white-space: nowrap;
 }
 
 .task-row-controls {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .task-row-controls select,
 .task-row-controls input[type='date'] {
-  font-size: 13px;
-  padding: 4px 8px;
+  font-size: 14px;
+  padding: 7px 10px;
 }
 
 .task-delete {
   background: transparent;
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
-  padding: 4px 10px;
-  font-size: 13px;
+  padding: 7px 14px;
+  font-size: 14px;
 }
 
 .task-delete:hover {
@@ -407,25 +429,33 @@ a {
 }
 
 .task-rationale {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  padding: 8px 10px;
+  background: rgba(242, 169, 59, 0.08);
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+  padding: 12px 16px;
   display: flex;
-  gap: 8px;
-  align-items: flex-start;
+  align-items: center;
+  gap: 14px;
 }
 
 .task-rank {
   font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--color-accent);
-  font-size: 13px;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--color-accent-text);
+  background: var(--color-accent);
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
 .task-rationale p {
   margin: 0;
-  font-size: 13px;
-  color: var(--color-text-muted);
+  font-size: 15px;
+  color: var(--color-text);
 }

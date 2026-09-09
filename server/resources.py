@@ -25,13 +25,49 @@ def require_login():
     return user_id, None
 
 
+def get_pagination_params():
+    """Parses ?page=&per_page= from the query string. Returns (page, per_page, None)
+    or (None, None, (body, status)) on invalid input."""
+    try:
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("per_page", 10))
+    except ValueError:
+        return None, None, ({"error": "page and per_page must be integers."}, 400)
+
+    if page < 1 or per_page < 1:
+        return None, None, (
+            {"error": "page and per_page must be positive integers."},
+            400,
+        )
+    return page, per_page, None
+
+
+def paginate(query, page, per_page, schema):
+    """Applies offset/limit to a query and returns a paginated response dict."""
+    total = query.count()
+    items = query.offset((page - 1) * per_page).limit(per_page).all()
+    pages = (total + per_page - 1) // per_page if total else 0
+    return {
+        "items": schema.dump(items),
+        "page": page,
+        "per_page": per_page,
+        "total": total,
+        "pages": pages,
+    }
+
+
 class ProjectListResource(Resource):
     def get(self):
         user_id, error = require_login()
         if error:
             return error
-        projects = Project.query.filter_by(user_id=user_id).all()
-        return projects_schema.dump(projects), 200
+
+        page, per_page, error = get_pagination_params()
+        if error:
+            return error
+
+        query = Project.query.filter_by(user_id=user_id).order_by(Project.id)
+        return paginate(query, page, per_page, projects_schema), 200
 
     def post(self):
         user_id, error = require_login()
@@ -111,8 +147,17 @@ class TaskListResource(Resource):
         user_id, error = require_login()
         if error:
             return error
-        tasks = Task.query.join(Project).filter(Project.user_id == user_id).all()
-        return tasks_schema.dump(tasks), 200
+
+        page, per_page, error = get_pagination_params()
+        if error:
+            return error
+
+        query = (
+            Task.query.join(Project)
+            .filter(Project.user_id == user_id)
+            .order_by(Task.id)
+        )
+        return paginate(query, page, per_page, tasks_schema), 200
 
     def post(self):
         user_id, error = require_login()

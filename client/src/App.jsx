@@ -18,9 +18,13 @@ function EmptyState() {
 }
 
 function App() {
+  const PROJECTS_PER_PAGE = 10;
+
   const [currentUser, setCurrentUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [projects, setProjects] = useState([]);
+  const [projectsPage, setProjectsPage] = useState(1);
+  const [projectsTotalPages, setProjectsTotalPages] = useState(1);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [error, setError] = useState(null);
 
@@ -33,16 +37,32 @@ function App() {
       .finally(() => setCheckingSession(false));
   }, []);
 
-  // Once logged in, load this user's projects.
+  // Once logged in, load this user's projects (first page).
   useEffect(() => {
     if (!currentUser) return;
     setLoadingProjects(true);
     api
-      .getProjects()
-      .then(setProjects)
+      .getProjects({ page: 1, per_page: PROJECTS_PER_PAGE })
+      .then((data) => {
+        setProjects(data.items);
+        setProjectsPage(data.page);
+        setProjectsTotalPages(data.pages);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoadingProjects(false));
   }, [currentUser]);
+
+  function handleLoadMoreProjects() {
+    const nextPage = projectsPage + 1;
+    api
+      .getProjects({ page: nextPage, per_page: PROJECTS_PER_PAGE })
+      .then((data) => {
+        setProjects((prev) => [...prev, ...data.items]);
+        setProjectsPage(data.page);
+        setProjectsTotalPages(data.pages);
+      })
+      .catch((err) => setError(err.message));
+  }
 
   function handleProjectCreated(project) {
     setProjects((prev) => [...prev, project]);
@@ -76,6 +96,8 @@ function App() {
           loading={loadingProjects}
           error={error}
           onProjectCreated={handleProjectCreated}
+          hasMore={projectsPage < projectsTotalPages}
+          onLoadMore={handleLoadMoreProjects}
         />
         <main className="app-main">
           <Routes>

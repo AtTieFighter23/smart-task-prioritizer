@@ -58,7 +58,7 @@ function TaskRow({ task, onUpdate, onDelete }) {
 
       {task.priority_rank != null && (
         <div className="task-rationale">
-          <span className="task-rank">#{task.priority_rank}</span>
+          <span className="task-rank">{task.priority_rank}</span>
           <p>{task.ai_rationale}</p>
         </div>
       )}

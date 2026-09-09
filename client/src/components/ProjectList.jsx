@@ -2,7 +2,14 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { api } from '../api';
 
-function ProjectList({ projects, loading, error: fetchError, onProjectCreated }) {
+function ProjectList({
+  projects,
+  loading,
+  error: fetchError,
+  onProjectCreated,
+  hasMore,
+  onLoadMore,
+}) {
   const [name, setName] = useState('');
   const [createError, setCreateError] = useState(null);
 
@@ -32,19 +39,27 @@ function ProjectList({ projects, loading, error: fetchError, onProjectCreated })
       ) : projects.length === 0 ? (
         <p className="muted-text">No projects yet. Add one below to get started.</p>
       ) : (
-        <nav className="project-nav">
-          {projects.map((project) => (
-            <NavLink
-              key={project.id}
-              to={`/projects/${project.id}`}
-              className={({ isActive }) =>
-                `project-nav-link${isActive ? ' active' : ''}`
-              }
-            >
-              {project.name}
-            </NavLink>
-          ))}
-        </nav>
+        <>
+          <nav className="project-nav">
+            {projects.map((project) => (
+              <NavLink
+                key={project.id}
+                to={`/projects/${project.id}`}
+                className={({ isActive }) =>
+                  `project-nav-link${isActive ? ' active' : ''}`
+                }
+              >
+                {project.name}
+              </NavLink>
+            ))}
+          </nav>
+
+          {hasMore && (
+            <button type="button" className="load-more-button" onClick={onLoadMore}>
+              Load more
+            </button>
+          )}
+        </>
       )}
 
       <form className="new-project-form" onSubmit={handleSubmit}>

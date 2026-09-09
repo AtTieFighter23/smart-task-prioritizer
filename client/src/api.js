@@ -1,5 +1,10 @@
 const BASE_URL = 'http://localhost:5555';
 
+function buildQuery(params) {
+  const query = new URLSearchParams(params).toString();
+  return query ? `?${query}` : '';
+}
+
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
     credentials: 'include', // sends/receives the session cookie cross-port
@@ -30,7 +35,10 @@ export const api = {
   logout: () => request('/logout', { method: 'DELETE' }),
   checkSession: () => request('/check_session'),
 
-  getProjects: () => request('/projects'),
+  // Both return { items, page, per_page, total, pages }
+  getProjects: (params = {}) => request(`/projects${buildQuery(params)}`),
+  getTasks: (params = {}) => request(`/tasks${buildQuery(params)}`),
+
   createProject: (payload) =>
     request('/projects', { method: 'POST', body: JSON.stringify(payload) }),
   getProject: (id) => request(`/projects/${id}`),
@@ -45,3 +53,4 @@ export const api = {
   prioritize: (projectId) =>
     request(`/projects/${projectId}/prioritize`, { method: 'POST' }),
 };
+
