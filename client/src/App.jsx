@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import ProjectList from './components/ProjectList';
 import ProjectDetail from './components/ProjectDetail';
+import AuthForm from './components/AuthForm';
 import { api } from './api';
 
 function EmptyState() {
@@ -17,17 +18,31 @@ function EmptyState() {
 }
 
 function App() {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingProjects, setLoadingProjects] = useState(false);
   const [error, setError] = useState(null);
 
+  // On load, see if a session cookie from a previous visit is still valid.
   useEffect(() => {
+    api
+      .checkSession()
+      .then(setCurrentUser)
+      .catch(() => setCurrentUser(null))
+      .finally(() => setCheckingSession(false));
+  }, []);
+
+  // Once logged in, load this user's projects.
+  useEffect(() => {
+    if (!currentUser) return;
+    setLoadingProjects(true);
     api
       .getProjects()
       .then(setProjects)
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+      .finally(() => setLoadingProjects(false));
+  }, [currentUser]);
 
   function handleProjectCreated(project) {
     setProjects((prev) => [...prev, project]);
@@ -37,13 +52,28 @@ function App() {
     setProjects((prev) => prev.filter((p) => p.id !== projectId));
   }
 
+  function handleLogout() {
+    api.logout().then(() => {
+      setCurrentUser(null);
+      setProjects([]);
+    });
+  }
+
+  if (checkingSession) {
+    return <p className="muted-text" style={{ padding: 24 }}>Loading…</p>;
+  }
+
+  if (!currentUser) {
+    return <AuthForm onAuthenticated={setCurrentUser} />;
+  }
+
   return (
     <div className="app-shell">
-      <NavBar />
+      <NavBar currentUser={currentUser} onLogout={handleLogout} />
       <div className="app-body">
         <ProjectList
           projects={projects}
-          loading={loading}
+          loading={loadingProjects}
           error={error}
           onProjectCreated={handleProjectCreated}
         />

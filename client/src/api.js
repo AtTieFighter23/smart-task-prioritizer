@@ -2,6 +2,7 @@ const BASE_URL = 'http://localhost:5555';
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
+    credentials: 'include', // sends/receives the session cookie cross-port
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });
@@ -22,6 +23,13 @@ async function request(path, options = {}) {
 }
 
 export const api = {
+  signup: (payload) =>
+    request('/signup', { method: 'POST', body: JSON.stringify(payload) }),
+  login: (payload) =>
+    request('/login', { method: 'POST', body: JSON.stringify(payload) }),
+  logout: () => request('/logout', { method: 'DELETE' }),
+  checkSession: () => request('/check_session'),
+
   getProjects: () => request('/projects'),
   createProject: (payload) =>
     request('/projects', { method: 'POST', body: JSON.stringify(payload) }),

@@ -1,5 +1,12 @@
 from config import ma
-from models import Project, Task, PrioritizationRun
+from models import User, Project, Task, PrioritizationRun
+
+
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        load_instance = True
+        exclude = ("password_hash",)
 
 
 class TaskSchema(ma.SQLAlchemyAutoSchema):
@@ -30,3 +37,4 @@ tasks_schema = TaskSchema(many=True)
 project_schema = ProjectSchema()
 projects_schema = ProjectSchema(many=True)
 prioritization_run_schema = PrioritizationRunSchema()
+user_schema = UserSchema()

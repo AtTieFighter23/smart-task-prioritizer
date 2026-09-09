@@ -4,6 +4,7 @@ __pycache__/
 instance/
 *.db
 .env
+cookies.txt
 
 # Node / React (client/)
 node_modules/

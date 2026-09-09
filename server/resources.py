@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import request
+from flask import request, session
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 
@@ -16,43 +16,69 @@ def parse_due_date(value):
     return datetime.strptime(value, "%Y-%m-%d").date()
 
 
+def require_login():
+    """Returns (user_id, None) if logged in, or (None, (body, status)) if not.
+    Callers should `return error` immediately when error is not None."""
+    user_id = session.get("user_id")
+    if not user_id:
+        return None, ({"error": "Not authenticated."}, 401)
+    return user_id, None
+
+
 class ProjectListResource(Resource):
     def get(self):
-        projects = Project.query.all()
+        user_id, error = require_login()
+        if error:
+            return error
+        projects = Project.query.filter_by(user_id=user_id).all()
         return projects_schema.dump(projects), 200
 
     def post(self):
+        user_id, error = require_login()
+        if error:
+            return error
+
         data = request.get_json()
-        if not data or "name" not in data or "user_id" not in data:
-            return {"error": "name and user_id are required."}, 400
+        if not data or "name" not in data:
+            return {"error": "name is required."}, 400
         try:
             project = Project(
                 name=data["name"],
                 description=data.get("description"),
-                user_id=data["user_id"],
+                user_id=user_id,  # always the logged-in user, never client-supplied
             )
             db.session.add(project)
             db.session.commit()
         except ValueError as e:
             db.session.rollback()
             return {"error": str(e)}, 400
-        except IntegrityError:
-            db.session.rollback()
-            return {"error": "Invalid user_id."}, 400
         return project_schema.dump(project), 201
 
 
 class ProjectResource(Resource):
     def get(self, id):
+        user_id, error = require_login()
+        if error:
+            return error
+
         project = Project.query.get(id)
         if not project:
             return {"error": "Project not found."}, 404
+        if project.user_id != user_id:
+            return {"error": "Forbidden."}, 403
         return project_schema.dump(project), 200
 
     def patch(self, id):
+        user_id, error = require_login()
+        if error:
+            return error
+
         project = Project.query.get(id)
         if not project:
             return {"error": "Project not found."}, 404
+        if project.user_id != user_id:
+            return {"error": "Forbidden."}, 403
+
         data = request.get_json() or {}
         try:
             for attr in ("name", "description"):
@@ -65,9 +91,16 @@ class ProjectResource(Resource):
         return project_schema.dump(project), 200
 
     def delete(self, id):
+        user_id, error = require_login()
+        if error:
+            return error
+
         project = Project.query.get(id)
         if not project:
             return {"error": "Project not found."}, 404
+        if project.user_id != user_id:
+            return {"error": "Forbidden."}, 403
+
         db.session.delete(project)
         db.session.commit()
         return {}, 204
@@ -75,13 +108,25 @@ class ProjectResource(Resource):
 
 class TaskListResource(Resource):
     def get(self):
-        tasks = Task.query.all()
+        user_id, error = require_login()
+        if error:
+            return error
+        tasks = Task.query.join(Project).filter(Project.user_id == user_id).all()
         return tasks_schema.dump(tasks), 200
 
     def post(self):
+        user_id, error = require_login()
+        if error:
+            return error
+
         data = request.get_json()
         if not data or "title" not in data or "project_id" not in data:
             return {"error": "title and project_id are required."}, 400
+
+        project = Project.query.get(data["project_id"])
+        if not project or project.user_id != user_id:
+            return {"error": "Invalid project_id."}, 400
+
         try:
             task = Task(
                 title=data["title"],
@@ -89,30 +134,40 @@ class TaskListResource(Resource):
                 due_date=parse_due_date(data.get("due_date")),
                 user_priority=data.get("user_priority", "medium"),
                 status=data.get("status", "not_started"),
-                project_id=data["project_id"],
+                project_id=project.id,
             )
             db.session.add(task)
             db.session.commit()
         except ValueError as e:
             db.session.rollback()
             return {"error": str(e)}, 400
-        except IntegrityError:
-            db.session.rollback()
-            return {"error": "Invalid project_id."}, 400
         return task_schema.dump(task), 201
 
 
 class TaskResource(Resource):
     def get(self, id):
+        user_id, error = require_login()
+        if error:
+            return error
+
         task = Task.query.get(id)
         if not task:
             return {"error": "Task not found."}, 404
+        if task.project.user_id != user_id:
+            return {"error": "Forbidden."}, 403
         return task_schema.dump(task), 200
 
     def patch(self, id):
+        user_id, error = require_login()
+        if error:
+            return error
+
         task = Task.query.get(id)
         if not task:
             return {"error": "Task not found."}, 404
+        if task.project.user_id != user_id:
+            return {"error": "Forbidden."}, 403
+
         data = request.get_json() or {}
         try:
             if "due_date" in data:
@@ -127,9 +182,16 @@ class TaskResource(Resource):
         return task_schema.dump(task), 200
 
     def delete(self, id):
+        user_id, error = require_login()
+        if error:
+            return error
+
         task = Task.query.get(id)
         if not task:
             return {"error": "Task not found."}, 404
+        if task.project.user_id != user_id:
+            return {"error": "Forbidden."}, 403
+
         db.session.delete(task)
         db.session.commit()
         return {}, 204
@@ -137,9 +199,15 @@ class TaskResource(Resource):
 
 class PrioritizeResource(Resource):
     def post(self, id):
+        user_id, error = require_login()
+        if error:
+            return error
+
         project = Project.query.get(id)
         if not project:
             return {"error": "Project not found."}, 404
+        if project.user_id != user_id:
+            return {"error": "Forbidden."}, 403
 
         open_tasks = [t for t in project.tasks if t.status != "completed"]
         if not open_tasks:

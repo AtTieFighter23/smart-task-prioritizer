@@ -30,11 +30,26 @@ def create_app(env="development"):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key")
 
+    # Frontend (:5173) and backend (:5555) are different ports, which browsers
+    # treat as different origins — these settings let the session cookie
+    # travel cross-origin. Modern browsers treat http://localhost as secure
+    # enough for this even without HTTPS.
+    app.config["SESSION_COOKIE_SAMESITE"] = "None"
+    app.config["SESSION_COOKIE_SECURE"] = True
+
     db.init_app(app)
     migrate.init_app(app, db)
     api.init_app(app)
     ma.init_app(app)
     bcrypt.init_app(app)
-    CORS(app, supports_credentials=True)
+    # Wildcard origins ("*") are rejected by browsers when credentials are
+    # involved, so the frontend's exact origin must be named explicitly.
+    # Both hostnames are listed since browsers treat localhost and 127.0.0.1
+    # as different origins even though they're the same machine.
+    CORS(
+        app,
+        supports_credentials=True,
+        origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    )
 
     return app

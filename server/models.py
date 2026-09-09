@@ -1,7 +1,7 @@
 from sqlalchemy.orm import validates
 from sqlalchemy.sql import func
 
-from config import db
+from config import db, bcrypt
 
 VALID_PRIORITIES = ("low", "medium", "high")
 VALID_STATUSES = ("not_started", "in_progress", "completed")
@@ -17,6 +17,25 @@ class User(db.Model):
     projects = db.relationship(
         "Project", back_populates="user", cascade="all, delete-orphan"
     )
+
+    @validates("username")
+    def validate_username(self, key, username):
+        if not username or not username.strip():
+            raise ValueError("Username cannot be empty.")
+        return username
+
+    @property
+    def password(self):
+        raise AttributeError("password is not a readable attribute")
+
+    @password.setter
+    def password(self, plaintext_password):
+        self.password_hash = bcrypt.generate_password_hash(
+            plaintext_password
+        ).decode("utf-8")
+
+    def authenticate(self, plaintext_password):
+        return bcrypt.check_password_hash(self.password_hash, plaintext_password)
 
     def __repr__(self):
         return f"<User {self.id}: {self.username}>"
@@ -97,4 +116,3 @@ class PrioritizationRun(db.Model):
 
     def __repr__(self):
         return f"<PrioritizationRun {self.id} for Project {self.project_id}>"
-    

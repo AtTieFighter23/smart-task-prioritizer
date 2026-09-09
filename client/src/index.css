@@ -89,6 +89,28 @@ a {
 .navbar {
   border-bottom: 1px solid var(--color-border);
   padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logout-button {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.logout-button:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
 }
 
 .navbar-title {
@@ -181,6 +203,63 @@ a {
 .empty-state h1 {
   font-family: var(--font-display);
   font-size: 20px;
+}
+
+/* --- Auth screen --- */
+
+.auth-screen {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-form {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  margin: 0;
+}
+
+.auth-form button[type='submit'] {
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  padding: 10px;
+  margin-top: 4px;
+}
+
+.auth-form button[type='submit']:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.auth-form button[type='submit']:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-toggle {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  padding: 4px 0;
+  text-align: center;
+}
+
+.auth-toggle:hover {
+  color: var(--color-accent);
 }
 
 /* --- Project detail --- */

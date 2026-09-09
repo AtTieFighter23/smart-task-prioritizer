@@ -2,10 +2,6 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { api } from '../api';
 
-// No auth in this build (deferred to the next project) — every project
-// is created under this single seeded demo user.
-const DEMO_USER_ID = 1;
-
 function ProjectList({ projects, loading, error: fetchError, onProjectCreated }) {
   const [name, setName] = useState('');
   const [createError, setCreateError] = useState(null);
@@ -15,7 +11,7 @@ function ProjectList({ projects, loading, error: fetchError, onProjectCreated })
     if (!name.trim()) return;
 
     api
-      .createProject({ name, user_id: DEMO_USER_ID })
+      .createProject({ name }) // owner is inferred from the session server-side
       .then((project) => {
         onProjectCreated(project);
         setName('');
